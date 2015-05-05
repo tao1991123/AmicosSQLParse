@@ -1,0 +1,21 @@
+--变量定义部分
+l_partid ccout.partid%TYPE;
+l_irc pnrreg.irc%TYPE;
+l_owner snrreg.owner%TYPE;
+l_bn snrreg.bn%TYPE;
+l_ata snrreg.ata%TYPE;
+l_zone snrreg.zone%TYPE;
+l_fin snrreg.fin%TYPE;
+l_root_partserid snrreg.root_partserid%TYPE;
+l_nh_partserid snrreg.nh_partserid%TYPE;
+l_group_seq snrreg.group_seq%TYPE;
+l_partserid snrreg.partserid%TYPE;
+l_sn snrreg.sn%TYPE;
+l_grouplevel ccout.grouplevel%TYPE;
+l_removable ccout.removable%TYPE;
+
+--SQL改写部分
+SELECT c2.partid , p2.irc , s2.owner , s2.bn , s2.ata , s2.zone , s2.fin , s2.root_partserid , s2.nh_partserid , s2.group_seq , s2.partserid , s2.sn , c2.grouplevel , c2.removable 
+INTO　l_partid , l_irc , l_owner , l_bn , l_ata , l_zone , l_fin , l_root_partserid , l_nh_partserid , l_group_seq , l_partserid , l_sn , l_grouplevel , l_removable 
+FROM ccout c2, pnrreg p2, snrreg s2
+WHERE c2.orderid = :p_swapid and c2.itemno = 1 and c2.partserid = s2.partserid and s2.partid = p2.partid  ; 

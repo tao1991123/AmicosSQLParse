@@ -1,0 +1,66 @@
+需求:
+1.解析amicos源码的SQL；
+2.生成变量定义
+3.生成符合PLSQL语句
+
+方案：
+使用Python编程
+输入：input.txt
+输出：output.txt
+
+
+现在处理4种SQL：
+
+1.单变量单表单对齐select
+Demo：
+dbms alias l_itemno,l_partid,l_partserid,l_root_partserid,l_nh_partserid,l_msn,l_ata,l_zone,l_fin,l_avail,\
+             l_availcondition,l_seq,l_stock,l_location,l_us_tagno,l_unscheduled,l_failure,l_rectified,\
+             l_removable,l_grouplevel
+sql select itemno,partid,partserid,root_partserid,nh_partserid,msn,ata,zone,fin,avail,\
+             availcondition,seq,stock,location,us_tagno,unscheduled,failure,rectified,removable,grouplevel \
+             from ccout where orderid = :p_orderid order by itemno
+			 
+输出 变量定义 与	PLSQL语句
+
+2.数组变量对齐select	
+Demo：
+vars l_itemno[occ] l_partid[occ] l_partserid[occ] l_root_partserid[occ] l_nh_partserid[occ]
+vars l_msn[occ] l_ata[occ] l_zone[occ] l_fin[occ] l_avail[occ] l_availcondition[occ] l_seq[occ] l_stock[occ] l_bn[occ] l_sortid[occ]
+vars l_location[occ] l_us_tagno[occ] l_unscheduled[occ] l_failure[occ] l_rectified[occ] 
+vars l_removable[occ] l_grouplevel[occ] l_org_root_partserid l_org_nh_partserid l_group_seq
+dbms alias l_itemno,l_partid,l_partserid,l_root_partserid,l_nh_partserid,l_msn,l_ata,l_zone,l_fin,l_avail,\
+             l_availcondition,l_seq,l_stock,l_location,l_us_tagno,l_unscheduled,l_failure,l_rectified,\
+             l_removable,l_grouplevel
+ sql select itemno,partid,partserid,root_partserid,nh_partserid,msn,ata,zone,fin,avail,\
+             availcondition,seq,stock,location,us_tagno,unscheduled,failure,rectified,removable,grouplevel \
+             from ccout where orderid = :p_orderid order by itemno	 
+			 
+输出 数组定义、变量定义与PLSQL语句	
+
+3.单变量混合select
+Demo：
+select partid l_partid,partserid l_partserid,ata l_ata,zone l_zone,fin l_fin,\
+       forcedstatus l_forcedstatus,seq l_seq,removable l_removable,mandatory l_mandatory,\
+       grouplevel l_grouplevel, nh_partserid l_nh_partserid \
+from ccout 
+where orderid = :p_orderid and itemno = :l_from_out_item;
+
+输出 变量定义与PLSQL语句		 
+
+4.单变量多表混合select
+select o.orderid l_oxid, o.ordertype l_ordertype, o.orderno l_orderno, ot.orderclass l_orderclass \
+      from orderxref ox, orders o, ordertype ot \
+      where ox.orderid = :p_orderid and ox.orderxrefid = o.orderid and o.ordertype = ot.ordertype
+	  
+5.数组多表对齐select
+    dbms alias l_avail,l_msn,l_manufdate,l_instdate,l_actai,l_ctai,l_ctar
+    sql select s.avail,s.msn,s.manufacturing_date,s.installation_date,sn.actai,sn.tai,sn.tar from snrreg s, \
+      snintunit sn where s.partserid = :p_partserid and s.partserid = sn.partserid and sn.unit = :+p_unit
+	  
+6.单表update  （暂缺）
+update parttime set rem_date = :+sign_date, rem_leg_id = :p_legid, unscheduled = :+p_unscheduled, \
+          failure = :+p_failure, orderid = :p_orderid, itemno = :p_item, rem_id = :p_orderid, rem_itemno = :p_item, \
+          ctar = :g_sn_ctar[n], actar = :g_sn_time[n], rectified = :+p_rectified, updatedwhen = :g_year_to_second, \
+          updatedby = :current_user_id, versionno = (versionno + 1), partid = :p_partid, pn = :+l_pn where \
+          parttimeid = :parttimeid and partserid = :p_partserid and rem_date is null and \
+          msn = :+p_msn and unit = :+g_sn_unit[n]

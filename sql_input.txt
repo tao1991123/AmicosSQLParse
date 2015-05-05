@@ -1,0 +1,3 @@
+select o.orderid l_oxid, o.ordertype l_ordertype, o.orderno l_orderno, ot.orderclass l_orderclass \
+      from orderxref ox, orders o, ordertype ot \
+      where ox.orderid = :p_orderid and ox.orderxrefid = o.orderid and o.ordertype = ot.ordertype
