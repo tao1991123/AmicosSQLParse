@@ -16,10 +16,10 @@ options = {"py2exe":
          }
       }
 setup(
-    version = "1.0.0",
-    description = "Amicos SQL Parse",
+    version = "1.1.0",
+    description = "Amicos SQL Parse \n Update 2015年5月7日",
     options = options,
     zipfile=None,
     #console=[{"script": "mainGUI.py", "icon_resources": [(1, "py.ico")] }],
-    windows=[{"script": "mainGUI.py", "icon_resources": [(1, "sql.ico")] }],
+    windows=[{"script": "AmicosSqlParse.py", "icon_resources": [(1, "sql.ico")] }],
 )

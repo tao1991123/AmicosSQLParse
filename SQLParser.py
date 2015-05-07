@@ -1,26 +1,7 @@
 # -*- coding: UTF-8 -*-
 import codecs
 import re
-import traceback
 from SQLParseConst import *
-
-
-def readfile():
-    text = ''
-    with codecs.open('sql_input.txt', 'r', encoding='utf-8') as f:
-        for line in f.readlines():
-            line = line.strip()
-            line = line.replace('\\', '')
-            text = text + ' ' + line
-
-    return text
-
-
-def writefile(text):
-    with codecs.open('sql_output.txt', 'w', encoding='utf-8') as f:
-        f.write(text)
-    return 0
-
 
 
 
@@ -123,6 +104,8 @@ class SelectSQLParser(object):
 
     def __variableInit(self,originalSQL,):
         varnames = []
+        cols = re.findall(r'select\s.+\sfrom',originalSQL)
+        col = re.sub(r'(select|from)','',cols[0])
 
         if 'dbms alias' in originalSQL :
             variableMatch = re.findall(r'alias\s.+\ssql',originalSQL)
@@ -214,9 +197,10 @@ class SelectSQLParser(object):
 
 
     def __typeOneSQLGenerator(self):
-        arrayDefineText = '--数组类型定义部分\n\n'
-        defineText = '\n\n--变量定义部分\n\n'
-        selectText = '\n\n--SQL改写部分\nSELECT '
+        arrayDefineText = '--数组类型定义\n\n'
+        defineText = '\n\n--变量定义\n\n'
+        cursorText = '\n\n--游标定义\nCursor my_cursor Is\nSelect  '
+        selectText = '\n\n--SQL改写\nSELECT '
         intoText  = '\nBULK COLLECT INTO　'
         isSingleTable = '__default__' in self.tableDict.keys()
         for variable in self.varnames:
@@ -234,29 +218,26 @@ class SelectSQLParser(object):
 
             if  isSingleTable :
                 selectText = selectText + variable.columnname + ' , '
+                cursorText = cursorText + variable.columnname + ' , '
                 intoText = intoText + variable.variable + ' , '
             else:
                 selectText = selectText + variable.tableshortname +'.'+ variable.columnname + ' , '
+                cursorText = cursorText + variable.tableshortname +'.'+ variable.columnname + ' , '
                 intoText = intoText + variable.variable + ' , '
 
         selectText = selectText.rstrip()
         selectText = selectText.rstrip(',')
 
+        cursorText = cursorText.rstrip()
+        cursorText = cursorText.rstrip(',')
+
         intoText = intoText.rstrip()
         intoText = intoText.rstrip(',')
 
 
-        return arrayDefineText + defineText + selectText + intoText +self.sqlfrom + self.sqlwhere
+        return arrayDefineText +  defineText+cursorText +self.sqlfrom + self.sqlwhere  + selectText + intoText +self.sqlfrom + self.sqlwhere
 
 
 
 if __name__ == '__main__':
-    sql = readfile()
-
-    try:
-        sqlr = SelectSQLParser(sql.lower(), 1)
-    except Exception :
-        sqlr = '123654'
-        print(sqlr)
-
-    writefile(sqlr.getText())
+    pass

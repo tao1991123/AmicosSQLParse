@@ -1,7 +1,7 @@
 #-*- coding: UTF-8 -*-
 
 from SQLParser import SelectSQLParser
-
+import pyperclip
 def SQLParse(originText , sqlType):
     lines = originText.split('\n')
     processedText = ''
@@ -19,3 +19,6 @@ def SQLParse(originText , sqlType):
         outputText = '未完成功能，待编写'
 
     return  outputText
+
+def copyToClipboard(text):
+    pyperclip.copy(text)
